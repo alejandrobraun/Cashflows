@@ -1,6 +1,8 @@
 module Cashflows
 
-export tvmnpv, tvmpmt, tvmpv, tvmfv, cfnoi
+using Roots
+
+export tvmnpv, tvmpmt, tvmpv, tvmfv, tvmirr, returns
 
 # Basic TVM Functions
 tvmnpv(i,cfo,cfall)=begin
@@ -15,8 +17,17 @@ tvmfv(n,i,pv,pmt)= begin
 	pv*(1+i)^p-sum(-pmt./(1+i).^(-n+1))
 	end
 
-# Operating Statement
-cfnoi(pgi,vcr,oexr,capexr)=pgi-pgi.*vcr-(pgi-pgi.*vcr)*oexr-(pgi-pgi.*vcr)*capexr
+tvmirr(cfo,cfall)=begin
+	f(x)=tvmnpv(x,cfo,cfall)
+	fzero(f,[0.0,1.0])
+	end
+
+returns(a)=begin
+	b=[a[n] for n=1:length(a)-1]
+	diff(a)./b
+	end
+
+
 
 importall Cashflows
 
